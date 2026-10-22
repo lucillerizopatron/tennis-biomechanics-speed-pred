@@ -1,0 +1,26 @@
+Proof of concept - tennis serve speed project (ETH, 3 ECTS)
+
+Based on the basketball pose paper (Williams et al.) we ask whether the
+serving arm (shoulder, elbow, wrist) predicts serve speed as well as the full
+17-joint skeleton. We use the 2024 US Open serve dataset (keypoints and metadata
+only), which lives in tennis_serve_data/.
+
+Before modelling, we smoothed the joint positions (positions
+relative to the hips, Butterworth low-pass filter). We also tried to detect the
+serving arm from the pose, but the left and right wrists are almost the same
+point in this data, so none of our rules worked. Instead we use a player
+handedness table (see src/handedness.py). Only two
+players are listed as left-handed, and the rest were not checked one by one.
+
+We then tried a Random Forest on summary features and a small transformer on the
+raw positions, always split by player and compared against a baseline using
+gender, serve number and height. Neither model found a useful link between the
+joints and serve speed beyond that baseline, for 3 joints or for 17 joints. A few
+related checks (variation within one player, first vs second serve, serve width
+and depth) also found nothing, while the same features could identify the player.
+So the pipeline seems to work, but the skeleton does not seem to carry serve speed.
+
+Limits: we only tried one small transformer setup with no tuning, and the serve
+speeds come from a match feed that we could not check against the video.
+
+Next steps...

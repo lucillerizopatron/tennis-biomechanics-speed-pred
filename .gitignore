@@ -1,0 +1,23 @@
+# Dataset (large; download from the Google Drive link in tennis_serve_data/README.md)
+tennis_serve_data/keypoints/
+tennis_serve_data/metadata.parquet
+*.npy
+*.npz
+*.parquet
+*.pkl
+*.csv
+
+# Environment
+venv/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
