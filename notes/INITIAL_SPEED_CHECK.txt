@@ -1,5 +1,3 @@
-Proof of concept - tennis serve speed project (ETH, 3 ECTS)
-
 Based on the basketball pose paper (Williams et al.) we ask whether the
 serving arm (shoulder, elbow, wrist) predicts serve speed as well as the full
 17-joint skeleton. We use the 2024 US Open serve dataset (keypoints and metadata
@@ -20,7 +18,13 @@ related checks (variation within one player, first vs second serve, serve width
 and depth) also found nothing, while the same features could identify the player.
 So the pipeline seems to work, but the skeleton does not seem to carry serve speed.
 
+We built a separate Random Forest pipeline (src/initial_speed_check/) on
+per-joint summary features (distance moved, peak speed, time of the peak, mean
+speed, accelerations) for the serving arm and for all joints. It reproduced our
+baseline and then tried ridge, residual Random Forest and boosting models with
+repeated player-grouped cross-validation and player-level bootstrap intervals.
+It also added a control with shuffled pose features, which did about as well as the
+real ones. None of the pose models beat the baseline, which agrees with our result.
+
 Limits: we only tried one small transformer setup with no tuning, and the serve
 speeds come from a match feed that we could not check against the video.
-
-Next steps...

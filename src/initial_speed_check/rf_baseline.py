@@ -1,4 +1,4 @@
-"""
+﻿"""
 Random Forest pipeline: does a 3-joint serving-arm representation predict serve
 speed as well as a 17-joint full-body representation? (2024 US Open serve data)
 
@@ -10,7 +10,7 @@ Models (identical player-level train/test split, identical serves for all):
   (+ a train-mean predictor for reference)
 
 Save next to serve_data.py and the smoothing / handedness modules, then run:
-    python run_pose_rf.py
+    python rf_baseline.py
 
 Requirements: numpy, pandas, scipy, scikit-learn, pyarrow (or fastparquet).
 
@@ -29,7 +29,7 @@ from pathlib import Path
 # CONFIGURATION  (edit here)
 # ============================================================================
 SCRIPT_DIR = Path(__file__).resolve().parent
-HELPER_DIR = SCRIPT_DIR                      # folder containing serve_data.py etc.
+HELPER_DIR = SCRIPT_DIR.parent                    # folder containing serve_data.py etc.
 DATA_DIR_OVERRIDE = None                     # e.g. Path("/path/to/tennis_serve_data"); None -> serve_data.DATA
 OUT_DIR = SCRIPT_DIR / "pose_rf_outputs"     # CSVs and cache are written here
 

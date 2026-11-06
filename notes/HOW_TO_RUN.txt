@@ -1,0 +1,12 @@
+How to reproduce the results (run from the src/ folder, with the venv active)
+
+1. 
+
+
+
+
+Initial speed check (earlier work, serve speed only; preliminary independent check of the speed result). 
+Folder: src/initial_speed_check/
+  rf_baseline.py         Random Forest on summary features, writes pose_rf_outputs/ next to it
+  null_control.py        run second: ridge/residual models + shuffled-pose control
+  metadata_baseline.ipynb  the gender + serve number + height baseline

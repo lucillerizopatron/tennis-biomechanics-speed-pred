@@ -1,6 +1,6 @@
-"""
+﻿"""
 Can a different model class extract value from pose features beyond the linear
-metadata baseline?  Reads features.csv written by run_pose_rf.py.
+metadata baseline?  Reads features.csv written by rf_baseline.py.
 
 Models (all use the SAME serves; every fit uses only training players):
   baseline            : linear regression on gender, serve_number, height_cm
@@ -17,7 +17,7 @@ Evaluation:
   A) the original 87/22 player split (the 'split' column)
   B) repeated player-grouped K-fold CV over ALL players (out-of-fold predictions)
 
-Usage:  python compare_models.py        (requirements: numpy, pandas, scikit-learn)
+Usage:  python null_control.py        (requirements: numpy, pandas, scikit-learn)
 """
 from __future__ import annotations
 
@@ -53,7 +53,7 @@ BASELINE = "Linear: metadata (baseline)"
 
 def load() -> tuple[pd.DataFrame, list, list]:
     if not FEATURES_CSV.exists():
-        sys.exit(f"ERROR: {FEATURES_CSV} not found. Run run_pose_rf.py first.")
+        sys.exit(f"ERROR: {FEATURES_CSV} not found. Run rf_baseline.py first.")
     df = pd.read_csv(FEATURES_CSV)
     need = ["server", "split", "pose_ok", TARGET] + META_CAT + META_NUM
     miss = [c for c in need if c not in df.columns]

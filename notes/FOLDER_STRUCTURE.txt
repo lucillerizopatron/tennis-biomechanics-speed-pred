@@ -1,0 +1,31 @@
+Folder structure
+
+tennis_serve_dataset/
+|-- README.md                     short description of the project
+|-- requirements.txt              Python packages needed
+|-- .gitignore                    files kept out of the repo
+|
+|-- tennis_serve_data/            the UVA tennis serve dataset (not made by us, CC BY 4.0)
+|   |-- keypoints/                5,966 files, one per serve: 3D positions of 17 joints at 60 fps
+|   |-- metadata.parquet          one row per serve: player, gender, height, serve number, speed, match
+|   |-- README.md, LICENSE        dataset description and licence (kept for attribution)
+|
+|-- notes/
+|   |-- INITIAL_SPEED_CHECK.txt   summary of the first attempt: does pose predict serve speed?
+|   |-- HYPOTHESIS.txt            central question, story and predictions
+|   |-- HOW_TO_RUN.txt            how to reproduce the results
+|   |-- FOLDER_STRUCTURE.txt      this file
+|
+|-- src/                          code
+|   |-- serve_data.py             loads metadata and keypoints; constants (60 fps, vertical axis, joint indices)
+|   |-- smoothing.py              hip-relative positions and the Butterworth low-pass filter (8 Hz)
+|   |-- handedness.py             lookup table of left-handed players (only partly verified)
+|   |
+|   |-- initial_speed_check/          first, speed-only attempt
+|   |   |-- rf_baseline.py            Random Forest on per-joint summary features vs a metadata baseline
+|   |   |-- null_control.py           ridge/residual models, repeated player-grouped CV, shuffled-pose control
+|   |   |-- metadata_baseline.ipynb   notebook: speed from gender + serve number + height only
+|   |
+|
+|-- results/                      outputs of the scripts 
+
