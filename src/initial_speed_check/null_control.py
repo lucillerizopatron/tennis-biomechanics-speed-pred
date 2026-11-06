@@ -1,4 +1,4 @@
-﻿"""
+"""
 Can a different model class extract value from pose features beyond the linear
 metadata baseline?  Reads features.csv written by rf_baseline.py.
 

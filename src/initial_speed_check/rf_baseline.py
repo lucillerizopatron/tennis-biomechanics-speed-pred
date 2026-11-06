@@ -1,4 +1,4 @@
-﻿"""
+"""
 Random Forest pipeline: does a 3-joint serving-arm representation predict serve
 speed as well as a 17-joint full-body representation? (2024 US Open serve data)
 
