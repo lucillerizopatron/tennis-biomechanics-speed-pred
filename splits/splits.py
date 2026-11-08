@@ -6,17 +6,21 @@ Two tasks, both 5-fold, repeated with different seeds:
 
 Rows follow the order of serve_data.load_metadata(), so an index here is the same
 row in the metadata and in the keypoint list. Rows not part of a task get fold -1.
-`python splits.py` writes splits/folds.json so the folds can be checked or shared.
+Run `python splits/splits.py` from the repo root to write splits/shared_5fold_splits.json (the same folds as a file).
+Scripts import this module with: sys.path.insert(0, ROOT / "splits"); import splits
 """
 import json
+import sys
+from pathlib import Path
 
 import numpy as np
 from sklearn.model_selection import GroupKFold
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))  # for serve_data.py
 import serve_data as sd
 
 N_FOLDS, N_REPS = 5, 3
-OUT = sd.ROOT / "splits" / "folds.json"
+OUT = sd.ROOT / "splits" / "shared_5fold_splits.json"
 
 
 def _meta():

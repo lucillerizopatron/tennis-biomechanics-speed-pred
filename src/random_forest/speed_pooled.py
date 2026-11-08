@@ -34,7 +34,7 @@ Models:
   15. RF: full-body pose only
 
 Run:
-    python3 src/random_forest.py
+    python speed_pooled.py        (from src/random_forest/)
 """
 
 from __future__ import annotations
@@ -51,9 +51,9 @@ from pathlib import Path
 # ============================================================================
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-HELPER_DIR = SCRIPT_DIR
+HELPER_DIR = SCRIPT_DIR.parent   # src/, where serve_data.py lives
 DATA_DIR_OVERRIDE = None
-OUT_DIR = SCRIPT_DIR / "pose_rf_outputs"
+OUT_DIR = SCRIPT_DIR.parent.parent / "results" / "random_forest" / "speed_pooled"
 
 SMOOTHING_MODULE = "smoothing"
 HANDEDNESS_MODULE = "serve_handedness"

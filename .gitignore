@@ -6,7 +6,6 @@ tennis_serve_data/metadata.parquet
 *.parquet
 *.pkl
 *.csv
-src/initial_speed_check/pose_rf_outputs/
 
 # Environment
 venv/
@@ -24,7 +23,6 @@ __pycache__/
 Thumbs.db
 
 # Later-step work and result numbers, pushed separately
-src/future/
 results/
 
 # Individual notes

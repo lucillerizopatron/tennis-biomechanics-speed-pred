@@ -97,7 +97,7 @@ if __name__ == "__main__":
     kps = sd.load_keypoints(meta)
     for cutoff in [8.0, 6.0, 12.0]:
         df = build(meta, kps, cutoff)
-        out = sd.ROOT / "results" / f"features_{int(cutoff)}hz.parquet"
+        out = sd.ROOT / "results" / "cache" / f"pose_features_{int(cutoff)}hz.parquet"
         out.parent.mkdir(exist_ok=True)
         df.to_parquet(out)
         print(cutoff, df.shape, flush=True)

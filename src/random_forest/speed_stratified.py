@@ -23,7 +23,7 @@ Player-level split:
 All models in each group use exactly the same pose-valid serves.
 
 Run:
-    python3 src/random_forest_stratified.py
+    python speed_stratified.py     (from src/random_forest/)
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 DATA_DIR_OVERRIDE = None
 
-OUT_DIR = SCRIPT_DIR / "pose_rf_stratified_outputs"
+OUT_DIR = SCRIPT_DIR.parent.parent / "results" / "random_forest" / "speed_stratified"
 
 SMOOTHING_MODULE = "smoothing"
 HANDEDNESS_MODULE = "serve_handedness"
@@ -123,7 +123,7 @@ from sklearn.pipeline import Pipeline
 # PROJECT HELPERS
 # ============================================================================
 
-sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(SCRIPT_DIR.parent))   # src/, where serve_data.py lives
 
 try:
     sd = importlib.import_module(SERVE_DATA_MODULE)

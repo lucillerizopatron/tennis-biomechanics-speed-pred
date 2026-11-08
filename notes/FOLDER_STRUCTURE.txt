@@ -10,22 +10,41 @@ tennis_serve_dataset/
 |   |-- metadata.parquet          one row per serve: player, gender, height, serve number, speed, match
 |   |-- README.md, LICENSE        dataset description and licence (kept for attribution)
 |
+|-- splits/                       everything about train/test folds, in one place
+|   |-- splits.py                 makes the shared 5-fold splits (player-grouped; match-grouped for identity)
+|   |-- shared_5fold_splits.json  the same folds as a file
+|   |-- README.txt                how the splits work, which scripts use which split
+|
 |-- notes/
-|   |-- INITIAL_SPEED_CHECK.txt   summary of the first attempt: does pose predict serve speed?
 |   |-- HYPOTHESIS.txt            central question, story and predictions
+|   |-- INITIAL_SPEED_CHECK.txt   summary of the first attempt: does pose predict serve speed?
 |   |-- HOW_TO_RUN.txt            how to reproduce the results
 |   |-- FOLDER_STRUCTURE.txt      this file
 |
-|-- src/                          code
+|-- src/                          code (run scripts from src/, or from src/random_forest/ for the Random Forest ones)
 |   |-- serve_data.py             loads metadata and keypoints; constants (60 fps, vertical axis, joint indices)
 |   |-- smoothing.py              hip-relative positions and the Butterworth low-pass filter (8 Hz)
 |   |-- handedness.py             lookup table of left-handed players (only partly verified)
+|   |-- pose_features.py          per-serve features: shape, motion, scaled motion (arm and body); saves results/cache/
+|   |-- pipeline_check.py         checks whether "pose does not predict speed" is a data limit; saves results/pipeline_check/
 |   |
-|   |-- initial_speed_check/          first, speed-only attempt
-|   |   |-- rf_baseline.py            Random Forest on per-joint summary features vs a metadata baseline
-|   |   |-- null_control.py           ridge/residual models, repeated player-grouped CV, shuffled-pose control
-|   |   |-- metadata_baseline.ipynb   notebook: speed from gender + serve number + height only
+|   |-- random_forest/            Random Forest work
+|   |   |-- all_targets_5fold_cv.py       gender, serve number, identity, speed on the shared 5-fold splits
+|   |   |-- shuffled_controls.py          shuffled-pose and shuffled-label controls (shared splits)
+|   |   |-- speed_pooled.py               speed only, one 80/20 player split (seed 42), pooled
+|   |   |-- speed_stratified.py           speed only, one 80/20 split, within female/male x first/second serve
 |   |
+|   |-- transformer/              transformer work
+|   |   |-- transformer_lib.py            data loading, model, training loop
+|   |   |-- run_transformer.py            all transformer experiments (tune, gender, identity, serve, speed)
+|   |
+|   |-- archive/                  earlier work, not used in the report
+|       |-- initial_speed_check/          first speed-only Random Forest scripts and notebook, frame-skipping scripts
+|       |-- transformer_first_attempt.py  first transformer, before the shared splits
 |
-|-- results/                      outputs of the scripts 
-
+|-- results/                      outputs of the scripts (not in the repo); see results/README.txt
+|   |-- cache/                    reusable intermediate data (features, resampled keypoints)
+|   |-- pipeline_check/           output of pipeline_check.py
+|   |-- random_forest/            all_targets_5fold_cv/, speed_pooled/, speed_stratified/
+|   |-- transformer/              results_3repeats.*, results_first_run_1repeat_with_speed.*, tuned_configs.json
+|   |-- archive/                  outputs of earlier, unused versions

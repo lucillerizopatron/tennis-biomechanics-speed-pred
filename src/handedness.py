@@ -1,5 +1,4 @@
-"""Player handedness for the 109 servers in the dataset.
-NOT FULLY VERIFIED"""
+"""Player handedness for the 109 servers in the dataset."""
 
 LEFT_HANDED = {
     "Denis Shapovalov",

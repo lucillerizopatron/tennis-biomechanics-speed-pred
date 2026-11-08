@@ -4,7 +4,7 @@ ETH semester project (3 ECTS), based on Williams et al., "Effects of variable po
 
 **Question:** which traits does the serving arm alone (3 joints) carry, and which need the full body (17 joints)? We compare the two inputs on serve speed, serve number, gender and player identity, using 3D pose from the 2024 US Open serve dataset (5,966 serves, 109 players), splits by player (by match for identity) and metadata baselines.
 
-*Work in progress.* See `notes/` for the hypothesis and the first speed check, and `notes/FOLDER_STRUCTURE.txt` for what each file does.
+*Work in progress.* See `notes/` for the hypothesis and the first speed check, and `notes/FOLDER_STRUCTURE.txt` for what each file does. Train/test folds are in `splits/` (one place, with its own README); `notes/HOW_TO_RUN.txt` lists the commands in order.
 
 ## Setup
 1. `pip install -r requirements.txt`

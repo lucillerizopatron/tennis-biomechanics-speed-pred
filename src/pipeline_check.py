@@ -19,7 +19,10 @@ from pose_features import columns
 
 warnings.filterwarnings("ignore")
 RES = sd.ROOT / "results"
-df = pd.read_parquet(RES / "features_8hz.parquet")
+CACHE = RES / "cache"
+OUT_DIR = RES / "pipeline_check"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+df = pd.read_parquet(CACHE / "pose_features_8hz.parquet")
 df["height_cm"] = df.height_cm.fillna(df.height_cm.median())
 
 print("1. SIZE AND UNITS")
@@ -73,7 +76,7 @@ def gain(frame, cols, seed=0):
 
 rows = []
 for hz in (6, 8, 12):
-    d = pd.read_parquet(RES / f"features_{hz}hz.parquet")
+    d = pd.read_parquet(CACHE / f"pose_features_{hz}hz.parquet")
     d["height_cm"] = d.height_cm.fillna(d.height_cm.median())
     for kind in ("motion", "scaled"):
         for size in ("arm", "body"):
@@ -83,4 +86,4 @@ b, f = gain(df, ["wrist_max_peak_speed", "wrist_peak_time_norm"])
 rows.append(("8 Hz", "both wrists, no handedness", "2 features", b, f, f - b))
 out = pd.DataFrame(rows, columns=["cutoff", "features", "set", "R2 baseline", "R2 with pose", "gain"])
 print(out.round(4).to_string(index=False))
-out.to_csv(RES / "speed_pipeline_check.csv", index=False)
+out.to_csv(OUT_DIR / "speed_pipeline_check.csv", index=False)

@@ -31,16 +31,16 @@ Predictions
 - Serve speed and serve number: neither input carries them beyond gender, serve
   number and height.
 
-Setup
-- Splits: by player (gender, speed, serve number); by match for identity (only
-  players seen in two or more matches).
-- Inputs: serving arm vs all 17 joints; shape only (bone lengths), raw motion
-  features, motion features scaled by limb size, and combinations. This separates
-  body shape from movement.
-- Baselines: majority class, and gender + serve number + height (+ speed where
-  it is not the target).
-- Models: Random Forest on summary features; small lightly tuned transformer on
-  raw positions.
+Plan
+- Targets: gender, player identity, serve number and serve speed.
+- Splits: by player (by match for identity), so no player is in both training and
+  test.
+- Inputs: the serving arm (3 joints) against all 17 joints, in raw, size-scaled and
+  motion-only versions, to separate body shape from movement.
+- Baselines: what the metadata alone predicts (gender, serve number, and height as a
+  separate extra baseline). Pose only counts if it beats them.
+- Models: a Random Forest on summary features and a small transformer on the raw
+  positions.
 - Uncertainty: player-level bootstrap confidence intervals.
-- Speed result: checked against pipeline problems (smoothing cutoff, scaling,
-  handedness table) before reporting it as a property of the data.
+- Speed: checked against pipeline problems (smoothing cutoff, scaling, handedness
+  table) before treating it as a property of the data.
