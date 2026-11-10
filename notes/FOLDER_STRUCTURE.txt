@@ -29,8 +29,6 @@ tennis_serve_dataset/
 |   |-- pipeline_check.py         checks whether "pose does not predict speed" is a data limit; saves results/pipeline_check/
 |   |
 |   |-- random_forest/            Random Forest work
-|   |   |-- all_targets_5fold_cv.py       gender, serve number, identity, speed on the shared 5-fold splits
-|   |   |-- shuffled_controls.py          shuffled-pose and shuffled-label controls (shared splits)
 |   |   |-- speed_pooled.py               speed only, one 80/20 player split (seed 42), pooled
 |   |   |-- speed_stratified.py           speed only, one 80/20 split, within female/male x first/second serve
 |   |
@@ -45,6 +43,6 @@ tennis_serve_dataset/
 |-- results/                      outputs of the scripts (not in the repo); see results/README.txt
 |   |-- cache/                    reusable intermediate data (features, resampled keypoints)
 |   |-- pipeline_check/           output of pipeline_check.py
-|   |-- random_forest/            all_targets_5fold_cv/, speed_pooled/, speed_stratified/
+|   |-- random_forest/            speed_pooled/, speed_stratified/
 |   |-- transformer/              results_3repeats.*, results_first_run_1repeat_with_speed.*, tuned_configs.json
 |   |-- archive/                  outputs of earlier, unused versions

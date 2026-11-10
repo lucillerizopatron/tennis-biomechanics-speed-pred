@@ -1,6 +1,6 @@
 Splits folder (all train/test folds live here)
 
-splits.py                   makes the shared folds; every script imports it (python splits/splits.py rewrites the json)
+splits.py                   makes the shared folds; the transformer script imports it (python splits/splits.py rewrites the json)
 shared_5fold_splits.json    the same folds as a file: test fold (0-4) of every serve, per task and repeat, -1 = not in the task
 
 Shared 5-fold splits (3 repeats, seeds 0-2)
@@ -8,7 +8,7 @@ Shared 5-fold splits (3 repeats, seeds 0-2)
   match    whole matches held out; identity, only the 46 players seen in 2+ matches (4,264 serves, 1,702 are -1);
            a test serve is scored only if its player is also in the training folds
   inner_split()   validation part cut from a TRAINING set (same grouping), for early stopping and tuning; not in the json
-  Used by:   src/random_forest/all_targets_5fold_cv.py, shuffled_controls.py, src/transformer/run_transformer.py
+  Used by:   src/transformer/run_transformer.py
   In a script:   sys.path.insert(0, ROOT / "splits"); import splits
                  splits.folds("player", rep)  ->  5 (train_idx, test_idx) pairs over metadata rows
 

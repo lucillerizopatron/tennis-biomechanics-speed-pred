@@ -10,15 +10,11 @@ From the repo root (optional; the folds are made on the fly by splits/splits.py,
  3. python splits/splits.py                       -> splits/shared_5fold_splits.json
 
 From src/random_forest/:
- 4. python all_targets_5fold_cv.py > ../../results/random_forest/all_targets_5fold_cv/all_targets_experiments.txt
-                                                  gender, serve number, identity, speed (shared 5-fold splits)
- 5. python shuffled_controls.py > ../../results/random_forest/all_targets_5fold_cv/shuffled_controls.txt
-                                                  shuffled-pose and shuffled-label controls
- 6. python speed_pooled.py                        speed, one 80/20 split (seed 42)   -> results/random_forest/speed_pooled/
- 7. python speed_stratified.py                    speed by gender and serve number   -> results/random_forest/speed_stratified/
+ 4. python speed_pooled.py                        speed, one 80/20 split (seed 42)   -> results/random_forest/speed_pooled/
+ 5. python speed_stratified.py                    speed by gender and serve number   -> results/random_forest/speed_stratified/
 
 From src/ (transformer; slow, several hours on CPU):
- 8. python transformer/run_transformer.py tune                         light tuning  -> results/transformer/tuned_configs.json
- 9. REPS=3 TAG=_3repeats python transformer/run_transformer.py gender identity serve    (PowerShell: $env:REPS='3'; $env:TAG='_3repeats')
-10. python transformer/run_transformer.py speed                        speed (1 repeat)
+ 6. python transformer/run_transformer.py tune                         light tuning  -> results/transformer/tuned_configs.json
+ 7. REPS=3 TAG=_3repeats python transformer/run_transformer.py gender identity serve    (PowerShell: $env:REPS='3'; $env:TAG='_3repeats')
+ 8. python transformer/run_transformer.py speed                        speed (1 repeat)
     QUICK=1 runs a one-epoch smoke test.
