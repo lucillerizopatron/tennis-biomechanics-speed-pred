@@ -41,7 +41,6 @@ tennis_serve_dataset/
 |   |
 |   |-- archive/                  earlier work, not used in the report
 |       |-- initial_speed_check/          first speed-only Random Forest scripts and notebook, frame-skipping scripts
-|       |-- transformer_first_attempt.py  first transformer, before the shared splits
 |
 |-- results/                      outputs of the scripts (not in the repo); see results/README.txt
 |   |-- cache/                    reusable intermediate data (features, resampled keypoints)

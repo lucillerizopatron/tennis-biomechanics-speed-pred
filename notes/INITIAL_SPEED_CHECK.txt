@@ -11,14 +11,14 @@ tried). We tried to detect the serving arm from the pose, but the left and right
 data, so none of our rules worked. Instead we use a player handedness table (src/handedness.py). Only two players are
 listed as left-handed, and the rest were not checked one by one.
 
-2. First models (code now in src/archive/initial_speed_check/ and src/archive/transformer_first_attempt.py)
+2. First models (code now in src/archive/initial_speed_check/)
 - A Random Forest on per-joint summary features (distance moved, peak speed, time of the peak, mean speed,
   accelerations) for the serving arm and for all joints, against a baseline from gender, serve number and height. It
   reproduced the baseline and then tried ridge, residual Random Forest and boosting models with repeated player-grouped
   cross-validation and player-level bootstrap intervals, plus a control with shuffled pose features, which did about as
   well as the real ones.
 - A metadata-only notebook (gender + serve number + height) to see how much of the speed the baseline already explains.
-- A small transformer on the raw positions, first on raw and then on size-scaled positions, always split by player.
+- A small transformer on the raw positions, first on raw and then on size-scaled positions, always split by player (this early script is no longer kept).
 None of these found a useful link between the joints and serve speed beyond the baseline, for 3 joints or for 17 joints.
 We also wrote frame-skipping scripts that drop every second frame, and sweep over several steps, to see whether the
 frame rate matters for speed prediction; their results are not summarised here.
