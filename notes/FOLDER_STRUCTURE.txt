@@ -18,6 +18,8 @@ tennis_serve_dataset/
 |-- notes/
 |   |-- HYPOTHESIS.txt            central question, story and predictions
 |   |-- INITIAL_SPEED_CHECK.txt   summary of the first attempt: does pose predict serve speed?
+|   |-- random_forest_results.txt Random Forest results write-up (all four targets)
+|   |-- transformer_results.txt   transformer results write-up (same structure)
 |   |-- HOW_TO_RUN.txt            how to reproduce the results
 |   |-- FOLDER_STRUCTURE.txt      this file
 |
@@ -29,6 +31,7 @@ tennis_serve_dataset/
 |   |-- pipeline_check.py         checks whether "pose does not predict speed" is a data limit; saves results/pipeline_check/
 |   |
 |   |-- random_forest/            Random Forest work
+|   |   |-- rf_targets.py                 gender, identity and serve number (pose only; serve number also with metadata)
 |   |   |-- speed_pooled.py               speed only, one 80/20 player split (seed 42), pooled
 |   |   |-- speed_stratified.py           speed only, one 80/20 split, within female/male x first/second serve
 |   |
