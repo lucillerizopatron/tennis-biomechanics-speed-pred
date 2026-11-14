@@ -1,134 +1,177 @@
-. Serve Speed
-The serve-speed analysis was developed in three stages.
-1.1 Initial experiment: the influence of metadata
-The first experiment used the complete dataset to investigate the relationship between serve speed, player metadata and body-pose information.
+1. Serve Speed
 
-The models included:
-- A mean-speed baseline.
-- Linear regression models using gender, serve number and height.
-- Random Forest models using metadata and pose features.
-- Pose-only Random Forest models, using either the serving arm or the full body.
-The results showed that gender and serve number have a strong influence on serve speed. A model using these two variables achieved an MAE of approximately 10.64 km/h, compared with 18.57 km/h for the mean baseline.
+The serve-speed analysis was developed in two stages. Both use the same player-level cross-validation as the other targets (5 folds, repeated 3 times), so no player appears in both training and test.
 
-Adding height to the linear regression model did not produce a meaningful improvement. Similarly, pose-only models performed close to the mean baseline:
-- Arm-only: MAE of 18.69 km/h.
-- Body-only: MAE of 18.11 km/h.
-Adding pose features to metadata also did not produce a convincing improvement.
+1.1 Stage 1: what explains serve speed?
 
-These findings raised an important question: were the models mainly learning differences between player groups and serve types, rather than extracting useful biomechanical information from the poses?
-1.2 Second experiment: analysing four subgroups separately
-To investigate this further, the dataset was divided into four groups:
-- Female first serves.
-- Female second serves.
-- Male first serves.
-- Male second serves.
-Within each group, gender and serve number are fixed. This makes it possible to investigate whether pose information and height help explain speed differences within the same category of serve.
+Models compared, on all 5,966 serves:
 
-Four models were compared:
-- Mean baseline.
-- Arm-only Random Forest.
-- Body-only Random Forest.
-- Height-only Random Forest.
-Height showed its clearest predictive contribution for male first serves. Its MAE was 13.64 km/h, compared with 17.42 km/h for the mean baseline. The bootstrap confidence interval also supported an improvement for this group.
+A mean-speed baseline.
+Linear regression on metadata, added step by step: gender, then serve number, then height.
+Random Forest on pose only (serving arm or full body).
+Random Forest on gender + serve number, with and without pose.
 
-For the other three groups, height did not show a statistically clear improvement over the mean baseline.
+Results (MAE, lower is better):
 
-This suggests that height can retain useful predictive information even after controlling for gender and serve number, although the effect is not equally strong across groups.
-1.3 Main biomechanical comparison: arm, body or mean
-The main objective was to determine whether the serving arm or the entire body provides useful information for predicting serve speed.
+Mean baseline: 20.0 km/h.
+Gender: 17.7 km/h.
+Gender + serve number: 11.7 km/h.
+Gender + serve number + height: 11.1 km/h. Height improves the error by 0.6 km/h (95% CI 0.2–1.0).
 
-The results did not show a consistent advantage for either pose representation over the mean baseline.
+Gender and serve number explain most of the variation. Height adds a small but clear improvement.
 
-The arm-only model did not outperform the mean baseline in any of the four groups. The body-only model also did not provide a consistent improvement.
+Pose-only models stay close to the mean baseline:
 
-The direct comparison between arm and body did not reveal a general advantage for using the full body. The only statistically clear difference was found for male second serves, where the arm-only model performed better than the body-only model.
+Arm only: 19.7 km/h (no clear improvement over the mean).
+Body only: 19.4 km/h (0.6 km/h better than the mean). This small gain most likely reflects gender information carried by the pose, not speed information.
 
-Overall, the experiments suggest that the pose features used here have limited predictive value for serve speed, particularly when compared with the information provided by metadata and height.
+Adding pose to gender + serve number makes the predictions slightly worse:
+
+Arm: +0.3 km/h (95% CI 0.2–0.4).
+Body: +0.2 km/h (95% CI 0.1–0.3).
+
+1.2 Stage 2: four subgroups
+
+To remove the effect of gender and serve number completely, the serves were divided into four groups:
+
+Female first serves (1,896 serves, 54 players).
+Female second serves (791 serves, 52 players).
+Male first serves (2,306 serves, 55 players).
+Male second serves (973 serves, 53 players).
+
+Within each group, models were trained separately and compared with the subgroup mean:
+
+Mean baseline.
+Height only.
+Arm only.
+Body only.
+
+Results:
+
+Height helps only for male first serves: 0.7 km/h better than the mean (95% CI 0.1–1.4). In the other three groups it gives no clear improvement.
+Arm and body never improve on the subgroup mean. They are slightly but significantly worse in 5 of 8 cases and no different in the rest. With no speed signal in the features, the model fits noise.
+Arm and body show no clear difference from each other in any group.
+
+Overall, the pose features carry no information about serve speed beyond gender, serve number and height.
 
 2. Gender Classification
-The gender experiment investigated whether body-pose features can distinguish between male and female players.
 
-Different feature representations were compared, using either the serving arm or the entire body:
-- Shape features, describing joint positions.
-- Motion features, describing how joints move during the serve.
-- Scaled motion features.
-- Combinations of shape and motion.
-The experiment included 5,966 serves from 109 players and used repeated player-level cross-validation (3 repetitions of 5 folds).
+The gender experiment investigated whether pose can distinguish male and female players, and whether the serving arm is enough.
 
-The results showed that pose information can provide useful information for gender classification. The best result was obtained using full-body shape combined with scaled motion, achieving a balanced accuracy of 77.5%. Full-body shape alone achieved 75.1%, while arm shape alone achieved only 47.1%.
+Feature representations, for the serving arm (3 joints) and the full body (17 joints):
 
-However, one particularly important finding is that serving-arm motion alone performs almost as well as the best full-body representation. Arm motion achieved a balanced accuracy of 76.2%, and arm scaled motion achieved 75.5%. The difference between arm motion and the best full-body model was only 1.3 percentage points.
+Shape: bone lengths, i.e. body proportions.
+Motion: speed, acceleration, path length and timing of each joint.
+Scaled motion: motion divided by a limb length.
+Combinations of shape and motion.
 
-The bootstrap comparisons support this observation:
-- Full-body shape clearly outperformed arm shape (difference of 28.1 percentage points; 95% CI: 20.5–35.3).
-- Full-body motion and arm motion performed similarly (difference of -0.2 percentage points; 95% CI: -2.6 to 1.9).
-- Full-body scaled motion and arm scaled motion also showed no significant difference (difference of 1.2 percentage points; 95% CI: -1.1 to 3.5).
-Another important observation is that adding motion to arm shape substantially improved performance: balanced accuracy increased from 47.1% to 75.9% when motion features were added. In contrast, adding motion to full-body shape did not produce a statistically clear improvement.
+Data: 5,966 serves from 109 players, repeated player-level cross-validation (3 repetitions of 5 folds). Metrics: balanced accuracy (chance = 50%) and AUC (chance = 0.5).
 
-Overall, the results suggest that gender-related information is strongly represented in body shape, but movement patterns from the serving arm alone are already highly informative. Using the entire body does not provide a clear additional advantage over arm motion for this classification task.
+Results (balanced accuracy / AUC):
+
+Arm shape: 58.5% / 0.61
+Body shape: 76.2% / 0.84
+Arm motion: 74.3% / 0.83
+Body motion: 76.5% / 0.85
+Arm shape + motion: 75.2% / 0.83
+Body shape + motion: 79.7% / 0.88
+Best: body shape + scaled motion: 81.0% / 0.88
+
+Main findings:
+
+The serving arm carries most of the gender information: about 75% with motion.
+The full body is better, but only by a small margin: +4.6 percentage points for shape + motion (95% CI 1.9–7.3).
+For the arm, movement matters much more than proportions: arm shape alone reaches only 58.5%, while adding motion raises it to 75.2% (+16.6 points).
+For the body, proportions alone already reach 76.2%. Adding motion gives no clear improvement.
+
+Overall, gender is clearly carried by the pose. The serving arm alone is already highly informative, and the full body adds a little on top.
+
 3. Player Identity Classification
-The identity experiment investigated whether pose features can distinguish between individual players.
 
-In this experiment, each player represents a separate classification class. Different arm and full-body feature representations were compared, as in the gender experiment.
+The identity experiment investigated whether pose can tell individual players apart. Each player is a separate class.
 
-A match-level split was used. This means that serves from a match were kept together rather than being distributed between training and test data.
+A match-level split was used: all serves from a match stay together, so the model must recognise a player in a match it has never seen. A player needed at least two matches to be included:
 
-An important limitation was that a player needed to appear in at least two different matches to be included in the identity evaluation. This was necessary to ensure that the model was tested on matches it had not seen during training.
+The dataset contains 109 players and 5,966 serves.
+46 players with 4,264 serves were eligible for this experiment.
+63 players were excluded because they appear in only one match.
 
-As a result:
-- The original dataset contained 109 players and 5,966 serves.
-- 46 players, with 4,264 serves, were eligible for the identity experiment.
-- 63 players were excluded because they appeared in only one match.
-This exclusion applies only to the identity experiment.
+Metrics: balanced accuracy and top-1 accuracy. Chance is 1/46 ≈ 2.2%.
 
-The results showed that full-body pose features were substantially more informative than arm-only features.
+Results (balanced accuracy / top-1 accuracy):
 
-The best result was obtained with full-body shape and motion, achieving a balanced accuracy of 45.6%. Full-body shape alone achieved 45.2%, while arm-only shape achieved just 9.6%.
+Arm shape: 8.0% / 13.8%
+Body shape: 39.8% / 53.5%
+Arm motion: 25.0% / 37.9%
+Body motion: 34.7% / 49.5%
+Arm shape + motion: 28.5% / 42.3%
+Body shape + motion: 41.6% / 57.0%
 
-Although identifying individual players remains a challenging task, the results indicate that information useful for distinguishing players is distributed across the body rather than being limited to the serving arm.
-## 4. Serve Number Classification
+Main findings:
 
-The final experiment investigated whether pose features can distinguish between first and second serves.
+The full body is clearly more informative than the arm: +13.1 points for shape + motion (95% CI 9.7–16.6).
+Most of the identity information is in body proportions: body shape alone reaches 39.8%, and adding motion gives no clear improvement.
+For the arm, it is the movement that matters: arm proportions alone are close to chance (8.0%), while arm motion reaches 25.0%.
+Recognition varies a lot from player to player (from 0% to 97%, median 40%). This makes the confidence intervals of the individual models wide, but the comparison between arm and body is precise, because both are tested on the same players.
 
-Different feature representations were tested, including:
+Overall, the information needed to tell players apart is spread across the body, mainly in its proportions.
 
-- Arm and full-body shape.
-- Arm and full-body motion.
-- Scaled motion.
-- Combinations of shape and motion.
+4. Serve Number Classification
 
-In addition to pose-only models, models combining pose features with metadata (gender and height) were evaluated.
+The final experiment investigated whether pose can distinguish first and second serves.
 
-The dataset contained 5,966 serves from 109 players:
+Data: 5,966 serves from 109 players:
 
-- 4,202 first serves (70.4%).
-- 1,764 second serves (29.6%).
+4,202 first serves (70.4%).
+1,764 second serves (29.6%).
 
-The models were evaluated using repeated player-level cross-validation (3 repetitions of 5 folds).
+Repeated player-level cross-validation (3 repetitions of 5 folds). Because the classes are imbalanced, the Random Forest was trained with class weighting. Without it, the model predicts “first serve” for almost every serve. Metrics: balanced accuracy and AUC. Models with pose only, and with pose + metadata (gender and height), were compared with a metadata-only baseline.
 
-The results were consistently close to **50% balanced accuracy**, which corresponds to chance-level performance for this binary classification task. Although ordinary accuracy was approximately 70%, this is explained by the imbalance between first and second serves: a model predicting the majority class already achieves 70.4% accuracy.
+Results:
 
-Neither pose-only models nor models combining pose features with metadata produced a meaningful improvement over the baselines. The best balanced accuracy was only 50.1%, achieved by the metadata model and some body-shape representations.
+All pose models reach a balanced accuracy of 50–51% and an AUC of at most 0.52.
+Metadata only (gender + height): AUC 0.50.
+Pose + metadata does not improve on metadata alone.
+Arm and body show no difference.
 
-Some paired bootstrap comparisons detected statistically significant differences, but these were extremely small (approximately 0.1–0.2 percentage points) and have no meaningful practical impact.
+Plain accuracy is misleading here: always predicting “first serve” already gives 70.4%.
 
-Overall, the results suggest that **the pose representations tested in this experiment do not contain useful information for reliably distinguishing first and second serves**.&#x20;
+Overall, the pose representations tested here do not distinguish first and second serves. AUC 0.52 means the model ranks a random second serve above a random first serve only 52% of the time, compared with 50% by chance.
+
 5. General Conclusions
-The experiments show that the usefulness of body-pose information depends strongly on the target being investigated.
-- Serve speed: Gender and serve number explain a substantial amount of the variation. Pose-only models provide little predictive improvement over the mean baseline. Height is particularly informative for male first serves.
-- Gender: Full-body shape and serving-arm motion both provide useful classification information. In particular, arm motion achieves performance comparable to the best full-body representation.
-- Player identity: Full-body features are considerably more informative than arm-only features, suggesting that individual characteristics are distributed throughout the body.
-- Serve number: The tested pose representations do not meaningfully distinguish first and second serves.
-An important overall observation is that the full body is not always more informative than the serving arm. Its usefulness depends on what we are trying to predict. Full-body information is particularly valuable for gender shape and player identity, while serving-arm motion alone is already highly informative for gender classification. Neither representation provides a consistent advantage for serve-speed prediction.
+
+How useful the pose is depends strongly on the target.
+
+Gender: carried mostly by the serving arm (about 75%); the full body adds a little (about 80%).
+Player identity: the full body is clearly needed (42% vs 28%), mostly through body proportions.
+Serve number: the pose does not distinguish first and second serves.
+Serve speed: gender and serve number explain most of it, and height adds a little. The pose adds nothing.
+
+In short, traits that stay the same for a player (gender, identity) are present in the skeleton, while serve-to-serve differences (speed, first vs second serve) are not. The full body is not always more informative than the serving arm: it matters for identity, adds only a little for gender, and makes no difference for speed or serve number.
+
+These conclusions agree with the transformer experiments on all four targets.
 
 6. Evaluation and Methodological Notes
-The experiments used different evaluation strategies depending on the target:
-- The initial serve-speed experiment used a player-level 80/20 train/test split.
-- The four-subgroup serve-speed experiment used player-level splits within each gender, keeping the same player assignment across first and second serves.
-- Gender and serve-number classification used repeated player-level cross-validation (3 repetitions of 5 folds).
-- Player identity used repeated match-level cross-validation (3 repetitions of 5 folds).
-For the classification experiments, performance was assessed using accuracy, balanced accuracy and macro F1-score. For serve-speed prediction, MAE, RMSE and R² were used.
 
-Bootstrap confidence intervals were also calculated for model comparisons. These help assess whether observed differences are supported by the evaluation data. A confidence interval containing zero should be interpreted as insufficient evidence of a clear difference, rather than proof that two models are equivalent.
+Joint order and serving arm:
 
-The serve-speed experiments use fixed holdout splits, whereas the classification experiments use repeated cross-validation. Their results should therefore be interpreted with these differences in evaluation design in mind.
+The 3D keypoints are in Human3.6M joint order (the output of MotionBERT), not COCO as the dataset description suggests. All results here use the correct H36M indices.
+The serving arm is chosen per serve as the side whose wrist reaches the higher peak speed. The left/right labels in the 3D data do not follow handedness: a handedness table agrees with the faster wrist in only 61% of serves, probably because half of the serves are seen mirrored.
+
+Features:
+
+Motion features are computed from hip-centred, low-pass-filtered (8 Hz) joint positions.
+Shape features are median bone lengths. The 3D lifting largely normalises skeleton size (bone lengths barely relate to player height, r ≤ 0.23), so shape describes proportions rather than size.
+
+Evaluation:
+
+Gender, serve number and serve speed: repeated player-level cross-validation (3 repetitions of 5 folds).
+Player identity: repeated match-level cross-validation (3 repetitions of 5 folds), on the 46 eligible players.
+Random Forest: 300 trees, maximum depth 10, at least 5 samples per leaf.
+Metrics: balanced accuracy and AUC (gender, serve number), balanced accuracy and top-1 accuracy (identity), MAE in km/h (serve speed).
+
+Uncertainty:
+
+95% confidence intervals come from a player-level bootstrap (2,000 resamples of the players). For identity, players are resampled as classes.
+Comparisons between models use paired bootstrap differences on the same resampled players.
+A confidence interval containing zero means there is not enough evidence of a clear difference, not proof that two models are equivalent.
