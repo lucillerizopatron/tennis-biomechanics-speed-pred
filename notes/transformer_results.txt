@@ -11,13 +11,13 @@ The models included:
 The results showed that gender and serve number explain most of the variation. B1 achieved an MAE of approximately 11.66 km/h, compared with 20.04 km/h for the mean baseline. Adding height (B2) improved it slightly, to 11.06 km/h.
 
 Pose-only models were only slightly better than the mean baseline:
-- Arm-only: MAE of 19.26 km/h.
-- Body-only: MAE of 19.39 km/h.
-This small gain is far from the B1 baseline, so it most likely reflects the gender difference and not speed information.
+- Arm-only: MAE of 19.57 km/h (change of -0.47 km/h; 95% CI: -1.23 to 0.12).
+- Body-only: MAE of 19.28 km/h (change of -0.76 km/h; 95% CI: -1.51 to 0.05).
+Neither change is clearly different from zero, and both are far from the B1 baseline, so any small gain most likely reflects the gender difference and not speed information.
 
 Adding pose to the baselines did not produce an improvement:
-- On top of B1: arm 11.73 km/h and body 11.72 km/h (changes of +0.07 and +0.06 km/h; both confidence intervals include 0).
-- On top of B2: arm 11.02 km/h and body 11.07 km/h (changes of -0.04 and +0.01 km/h; both confidence intervals include 0).
+- On top of B1: arm 11.67 km/h and body 11.65 km/h (changes of +0.01 and -0.01 km/h; both confidence intervals include 0).
+- On top of B2: arm 11.08 km/h and body 11.03 km/h (changes of +0.02 and -0.03 km/h; both confidence intervals include 0).
 The direct comparison between arm and body showed no clear difference in any of the three settings.
 Overall, the transformer finds no speed information in the pose beyond gender, serve number and height.
 
@@ -33,18 +33,18 @@ The experiment included 5,966 serves from 109 players and used repeated player-l
 The results showed that pose carries gender information, and that the arm carries most of it. Reference models without pose scored an AUC of 0.894 (height only), 0.860 (speed and serve number) and 0.914 (speed, serve number and height).
 
 Pose-only AUC:
-- Arm: 0.853 (raw), 0.848 (scaled), 0.870 (motion only).
-- Body: 0.911 (raw), 0.903 (scaled), 0.886 (motion only).
-The bootstrap comparisons support the observation that the arm is close to the body:
-- Raw: arm minus body of -0.058 (95% CI: -0.107 to -0.016).
-- Scaled: -0.056 (95% CI: -0.100 to -0.015).
-- Motion only: -0.016 (95% CI: -0.063 to 0.043), no clear difference.
-The body is slightly better than the arm for raw and scaled input, but the gap is small, and for motion-only input the two cannot be told apart.
+- Arm: 0.872 (raw), 0.858 (scaled), 0.856 (motion only).
+- Body: 0.929 (raw), 0.906 (scaled), 0.912 (motion only).
+The bootstrap comparisons show the body is slightly better than the arm in all three versions:
+- Raw: arm minus body of -0.057 (95% CI: -0.086 to -0.026).
+- Scaled: -0.048 (95% CI: -0.077 to -0.020).
+- Motion only: -0.057 (95% CI: -0.091 to -0.027).
+The gap is small compared with the distance of both inputs from chance, so the arm alone is already highly informative.
 
 Pose also adds to the metadata. With the network correcting a logistic model of the metadata (scaled input):
-- On top of speed and serve number (AUC 0.867): arm 0.910 (+0.043; 95% CI: 0.011 to 0.076), body 0.951 (+0.083; 95% CI: 0.049 to 0.119).
-- On top of speed, serve number and height (AUC 0.932): arm 0.965 (+0.033; 95% CI: -0.003 to 0.078), body 0.980 (+0.048; 95% CI: 0.006 to 0.104).
-The gain is smaller once height is included, because height already separates most players. Only the body gain is clearly different from zero in that case.
+- On top of speed and serve number (AUC 0.867): arm 0.922 (+0.055; 95% CI: 0.021 to 0.091), body 0.947 (+0.080; 95% CI: 0.037 to 0.124). The arm and the body are not clearly different here (-0.025; 95% CI: -0.053 to 0.003).
+- On top of speed, serve number and height (AUC 0.932): arm 0.966 (+0.034; 95% CI: -0.003 to 0.077), body 0.979 (+0.047; 95% CI: 0.001 to 0.105). The arm and the body are again not clearly different (-0.013; 95% CI: -0.038 to 0.008).
+The gain is smaller once height is included, because height already separates most players. Only the body gain is (just) different from zero in that case.
 
 Overall, the results suggest that gender is carried by the pose, that the serving arm alone is already highly informative, and that the full body adds a small amount on top.
 
@@ -60,11 +60,11 @@ This exclusion applies only to the identity experiment.
 The experiment used repeated match-level cross-validation (3 repetitions of 5 folds). The metric is top-1 accuracy. A model using height only reached 0.435.
 
 Top-1 accuracy:
-- Arm: 0.706 (raw), 0.697 (scaled), 0.700 (motion only).
-- Body: 0.826 (raw), 0.824 (scaled), 0.819 (motion only).
-The full body is clearly better than the arm in every version (arm minus body of -0.120, -0.127 and -0.119; all 95% confidence intervals exclude 0). The arm alone is still far above chance, and the results hardly change after scaling or removing the average position, so the transformer is not only reading body size.
+- Arm: 0.674 (raw), 0.651 (scaled), 0.650 (motion only).
+- Body: 0.846 (raw), 0.842 (scaled), 0.850 (motion only).
+The full body is clearly better than the arm in every version (arm minus body of -0.172, -0.192 and -0.200; all 95% confidence intervals exclude 0). The arm alone is still far above chance and above the height-only model, and the results hardly change after scaling or removing the average position, so the transformer is not only reading body size.
 
-These accuracies are higher than those of the Random Forest on summary features (reported there as balanced accuracy, so the two numbers are not directly comparable). A plausible reason is that summary features discard the timing and shape of the movement, but this was not tested.
+These are top-1 accuracies, so they are not directly comparable with balanced accuracies.
 
 Overall, the results indicate that useful information for telling players apart is spread across the body, although the serving arm alone carries a large part of it.
 
@@ -73,33 +73,35 @@ The final experiment investigated whether pose can distinguish first from second
 
 The transformer was tested with the arm and the body, on raw and on scaled input. The experiment used repeated player-level cross-validation (3 repetitions of 5 folds), and the metric is AUC. As a check that the label is learnable, a model using speed alone reached 0.893.
 
-The results were consistently close to chance:
-- Arm: 0.520 (raw), 0.515 (scaled).
-- Body: 0.518 (raw), 0.511 (scaled).
-- Arm minus body: 0.002 (95% CI: -0.008 to 0.012) for raw and 0.004 (95% CI: -0.005 to 0.012) for scaled.
-Overall, the results suggest that the pose does not contain useful information for distinguishing first and second serves.
+The results were close to chance:
+- Arm: 0.511 (raw), 0.517 (scaled).
+- Body: 0.527 (raw), 0.527 (scaled).
+- Arm minus body: -0.015 (95% CI: -0.030 to -0.003) for raw and -0.010 (95% CI: -0.025 to 0.003) for scaled.
+The body is slightly above 0.5 (its intervals just exclude 0.5), but an AUC of 0.53 is a very weak signal, far from the 0.893 reached by speed alone. Overall, the results suggest that the pose contains almost no useful information for distinguishing first and second serves.
 
 5. General Conclusions
 The experiments show that the usefulness of body pose depends strongly on the target being investigated.
 - Serve speed: Gender and serve number explain most of the variation. Pose adds nothing on top of them, for the arm or the body.
-- Gender: The arm carries most of the information (AUC 0.85-0.87, against 0.89-0.91 for the body), and pose adds to the metadata.
-- Player identity: The full body is clearly more informative than the arm (about 82% against 70%), though the arm is still far above chance.
-- Serve number: The pose does not distinguish first and second serves.
-These conclusions agree with the Random Forest experiments on all four targets: gender is largely carried by the arm, identity needs the body, and serve speed and serve number are not recoverable from the pose beyond the metadata. The two models differ in what they are given (summary features and body shape for the Random Forest, raw movement for the transformer), so their agreement makes it unlikely that the result depends on one modelling choice.
+- Gender: The arm carries most of the information (AUC 0.86-0.87, against 0.91-0.93 for the body), the body is slightly but consistently better, and pose adds to the metadata.
+- Player identity: The full body is clearly more informative than the arm (about 85% against 65%), though the arm is still far above chance.
+- Serve number: The pose carries almost nothing (AUC 0.51-0.53).
+The two models agree in the overall pattern: gender is largely carried by the arm with a small advantage for the body, identity needs the body, and serve speed and serve number are not recoverable from the pose beyond the metadata. The two models differ in what they are given (summary features and body shape for the Random Forest, raw movement for the transformer), so their agreement makes it unlikely that the result depends on one modelling choice.
 
 6. Evaluation and Methodological Notes
 The experiments used different evaluation strategies depending on the target:
 - Gender and serve number: repeated player-level cross-validation (3 repetitions of 5 folds), using the shared folds in splits/.
 - Player identity: repeated match-level cross-validation (3 repetitions of 5 folds) on the 46 eligible players, using the shared folds.
-- Serve speed: one repetition of player-level 5-fold cross-validation (not the fixed 80/20 split of the Random Forest speed experiments).
+- Serve speed: one repetition of player-level 5-fold cross-validation, using the shared folds.
 Performance was assessed using AUC (gender, serve number), top-1 accuracy (identity) and MAE (serve speed). Each training run used an inner validation split, taken from the training part only, for early stopping.
+
+Joints and serving arm: the 3D keypoints are in Human3.6M joint order (MotionBERT output), not COCO. Hip centring and the arm and torso scales use the Human3.6M joints. The left/right labels do not follow the players' handedness, so the serving arm is chosen per serve as the side whose wrist has the higher peak speed (src/transformer/joints.py).
 
 Player-level bootstrap confidence intervals (300 resamples) were calculated for all results and for the paired differences between arm and body. A confidence interval containing zero should be interpreted as insufficient evidence of a clear difference, rather than proof that two models are equivalent.
 
 Limitations:
 - Each repetition uses one training run, so the intervals reflect which players were drawn and not how much training varies.
-- Light tuning (5 configurations) was done once, on gender, using the training players of the first fold, and reused for all targets. This leaves a mild selection effect on the other folds.
-- The serving-arm input relies on the handedness table.
+- Light tuning (5 configurations per input) was done once, on gender, using the training players of the first fold, and reused for all targets. This leaves a mild selection effect on the other folds.
+- The serving side is the faster wrist, which is not always clear: the faster wrist moves only about 1.2 times faster at the median, so on some serves the arm input may be the other arm. This would make the arm results look weaker than a true serving arm would.
 - Scaled positions still contain body proportions; the motion-only version removes most of them.
 - Identity covers only the 46 players with at least two matches, so it says nothing about players the model has never seen.
 - Serve speed was run once, and only on the scaled input.
