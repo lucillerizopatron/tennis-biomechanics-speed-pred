@@ -15,5 +15,5 @@ From src/ (transformer; slow, several hours on CPU):
  4. python transformer/run_transformer.py tune                         light tuning  -> results/transformer/tuned_configs.json
  5. REPS=3 TAG=_3repeats python transformer/run_transformer.py gender identity serve    (PowerShell: $env:REPS='3'; $env:TAG='_3repeats')
  6. python transformer/run_transformer.py speed                        speed (1 repeat)
-    QUICK=1 runs a one-epoch smoke test.
+    Step 5 prints AUC / top-1 and balanced accuracy for each classification target. QUICK=1 runs a one-epoch smoke test.
     The first run builds results/cache/h36m_inputs_32frames.npz (32-frame positions, serving side and scales per serve).

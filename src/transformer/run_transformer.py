@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_absolute_error, roc_auc_score
+from sklearn.metrics import balanced_accuracy_score, mean_absolute_error, roc_auc_score
 
 import transformer_lib as L
 
@@ -106,14 +106,14 @@ def record(target, name, metric, vals):
     rows_out.append(dict(target=target, model=name, metric=metric, mean=np.mean(vals),
                          lo=np.percentile(vals, 2.5), hi=np.percentile(vals, 97.5)))
     pd.DataFrame(rows_out).to_csv(OUT_CSV, index=False)
-    print(f"  {name:44s} {ci(vals)}", flush=True)
+    print(f"  {name + (' (balanced acc.)' if metric == 'balanced accuracy' else ''):44s} {ci(vals)}", flush=True)
 
 
 def paired(target, label, a, b, metric):
     d = a - b
     rows_out.append(dict(target=target, model=label, metric=metric + " difference", mean=np.mean(d),
                          lo=np.percentile(d, 2.5), hi=np.percentile(d, 97.5)))
-    print(f"  {label:44s} {ci(d)}", flush=True)
+    print(f"  {label + (' (balanced acc.)' if metric == 'balanced accuracy' else ''):44s} {ci(d)}", flush=True)
 
 
 def load_cfg():
@@ -148,23 +148,29 @@ if "gender" in which:
     from sklearn.linear_model import LogisticRegression
     y = (meta.gender == "F").astype(int).values
     auc = lambda yy, pp: roc_auc_score(yy, pp)
+    bacc = lambda yy, pp: balanced_accuracy_score(yy, pp >= 0.5)  # classes are about equally common, so threshold 0.5
     print(f"=== GENDER (AUC, folds split by player, mean of {REPS} repeats) ===", flush=True)
     refs = {"height only (RF)": ["height_cm"], "speed + serve# (RF, no height)": ["speed_kmh", "serve_number"],
             "speed + serve# + height (RF)": ["speed_kmh", "serve_number", "height_cm"]}
     for name, cols in refs.items():
         p = rf_cv(cols, y, "player", "prob"); dr = draws_for(ok_of(p))
         record("gender", "reference: " + name, "AUC", score(p, dr, auc, y))
+        record("gender", "reference: " + name, "balanced accuracy", score(p, dr, bacc, y))
     for mode in ("raw", "scaled", "motion"):
-        sc = {}
+        sc, sb_ = {}, {}
         for size in ("arm", "body"):
             p = run_cv(inp(size, mode), y, "player", "prob", cfg[size]); dr = draws_for(ok_of(p))
             sc[size] = score(p, dr, auc, y)
             record("gender", f"transformer {size} [{mode}]", "AUC", sc[size])
+            sb_[size] = score(p, dr, bacc, y)
+            record("gender", f"transformer {size} [{mode}]", "balanced accuracy", sb_[size])
         paired("gender", f"  arm minus body [{mode}]", sc["arm"], sc["body"], "AUC")
+        paired("gender", f"  arm minus body [{mode}]", sb_["arm"], sb_["body"], "balanced accuracy")
     # pose beyond metadata: the network learns a correction on top of a logistic model on metadata
     print("  -- pose on top of metadata (scaled input; the transformer corrects a metadata logistic model) --", flush=True)
-    for mname, cols in (("speed + serve#", ["speed_kmh", "serve_number"]),
-                        ("speed + serve# + height", ["speed_kmh", "serve_number", "height_cm"])):
+    for mname, cols in (() if os.environ.get("SKIP_META") else
+                        (("speed + serve#", ["speed_kmh", "serve_number"]),
+                         ("speed + serve# + height", ["speed_kmh", "serve_number", "height_cm"]))):
         A = meta[cols].values.astype(float)
         A = (A - A.mean(0)) / A.std(0)
         lr_all = {}
@@ -200,33 +206,44 @@ if "identity" in which:
             v[te[splits.seen_in_train(meta, tr, te)]] = True
         valid &= v
     acc = lambda yy, pp: np.mean(yy == pp)
+    bacc = lambda yy, pp: balanced_accuracy_score(yy, pp)  # mean recall over the players present
     print(f"\n=== IDENTITY (top-1 accuracy; {len(names)} players seen in 2+ matches; folds split by match; "
           f"chance {1/len(names):.3f}; mean of {REPS} repeats) ===", flush=True)
     p = rf_cv(["height_cm"], y, "match", "class"); dr = draws_for(ok_of(p, valid))
     record("identity", "reference: height only (RF)", "accuracy", score(p, dr, acc, y))
+    record("identity", "reference: height only (RF)", "balanced accuracy", score(p, dr, bacc, y))
     for mode in ("raw", "scaled", "motion"):
-        sc = {}
+        sc, sb_ = {}, {}
         for size in ("arm", "body"):
             p = run_cv(inp(size, mode), y, "match", "class", cfg[size], n_out=len(names))
             dr = draws_for(ok_of(p, valid))
             sc[size] = score(p, dr, acc, y)
             record("identity", f"transformer {size} [{mode}]", "accuracy", sc[size])
+            sb_[size] = score(p, dr, bacc, y)
+            record("identity", f"transformer {size} [{mode}]", "balanced accuracy", sb_[size])
         paired("identity", f"  arm minus body [{mode}]", sc["arm"], sc["body"], "accuracy")
+        paired("identity", f"  arm minus body [{mode}]", sb_["arm"], sb_["body"], "balanced accuracy")
 
 # ---------------------------------------------------------------- serve number
 if "serve" in which:
     y = (meta.serve_number == 2).astype(int).values
     auc = lambda yy, pp: roc_auc_score(yy, pp)
+    prev = y.mean()  # second serves are about 30%, so the cut-off is their share, not 0.5
+    bacc = lambda yy, pp: balanced_accuracy_score(yy, pp >= prev)
     print(f"\n=== SERVE NUMBER (AUC, 0.5 = chance; folds split by player; mean of {REPS} repeats) ===", flush=True)
     p = rf_cv(["speed_kmh"], y, "player", "prob"); dr = draws_for(ok_of(p))
     record("serve number", "reference: speed only (RF, label sanity)", "AUC", score(p, dr, auc, y))
+    record("serve number", "reference: speed only (RF, label sanity)", "balanced accuracy", score(p, dr, bacc, y))
     for mode in ("raw", "scaled"):
-        sc = {}
+        sc, sb_ = {}, {}
         for size in ("arm", "body"):
             p = run_cv(inp(size, mode), y, "player", "prob", cfg[size]); dr = draws_for(ok_of(p))
             sc[size] = score(p, dr, auc, y)
             record("serve number", f"transformer {size} [{mode}]", "AUC", sc[size])
+            sb_[size] = score(p, dr, bacc, y)
+            record("serve number", f"transformer {size} [{mode}]", "balanced accuracy", sb_[size])
         paired("serve number", f"  arm minus body [{mode}]", sc["arm"], sc["body"], "AUC")
+        paired("serve number", f"  arm minus body [{mode}]", sb_["arm"], sb_["body"], "balanced accuracy")
 
 # ---------------------------------------------------------------- speed
 if "speed" in which:
