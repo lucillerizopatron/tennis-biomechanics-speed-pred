@@ -30,10 +30,11 @@ tennis_serve_dataset/
 |   |-- pose_features.py          per-serve features: shape, motion, scaled motion (arm and body); saves results/cache/
 |   |-- pipeline_check.py         checks whether "pose does not predict speed" is a data limit; saves results/pipeline_check/
 |   |
-|   |-- random_forest/            Random Forest work
-|   |   |-- rf_targets.py                 gender, identity and serve number (pose only; serve number also with metadata)
-|   |   |-- speed_pooled.py               speed only, one 80/20 player split (seed 42), pooled
-|   |   |-- speed_stratified.py           speed only, one 80/20 split, within female/male x first/second serve
+|   |-- random_forest/            Random Forest work (final versions only)
+|   |   |-- rf_common.py                  shared RF code: feature cache, shared folds, models, bootstrap
+|   |   |-- rf_features.py                per-serve features from H36M joints: shape and motion, serving arm and full body
+|   |   |-- rf_classify.py                gender, identity and serve number (shared 5-fold splits)
+|   |   |-- rf_speed.py                   speed: metadata vs. pose, then within the four gender x serve-number subgroups
 |   |
 |   |-- transformer/              transformer work
 |   |   |-- transformer_lib.py            data loading, model, training loop
@@ -45,6 +46,6 @@ tennis_serve_dataset/
 |-- results/                      outputs of the scripts (not in the repo); see results/README.txt
 |   |-- cache/                    reusable intermediate data (features, resampled keypoints)
 |   |-- pipeline_check/           output of pipeline_check.py
-|   |-- random_forest/            speed_pooled/, speed_stratified/
+|   |-- random_forest/            gender/, identity/, serve_number/, speed/
 |   |-- transformer/              results_3repeats.*, results_first_run_1repeat_with_speed.*, tuned_configs.json
 |   |-- archive/                  outputs of earlier, unused versions
