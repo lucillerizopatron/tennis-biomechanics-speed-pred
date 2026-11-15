@@ -37,7 +37,3 @@ tennis_serve_dataset/
 |   |   |-- transformer_lib.py            data loading, model, training loop
 |   |   |-- run_transformer.py            all transformer experiments (tune, gender, identity, serve, speed)
 |
-|-- results/                      outputs of the scripts (not in the repo); see results/README.txt
-|   |-- cache/                    reusable intermediate data (features, resampled keypoints)
-|   |-- random_forest/            gender/, identity/, serve_number/, speed/
-|   |-- transformer/              results_3repeats.*, speed results, tuned_configs.json, logs
