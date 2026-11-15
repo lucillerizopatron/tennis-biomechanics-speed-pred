@@ -1,4 +1,4 @@
-"""Shared train/test splits for the experiments (used by the transformer; reusable by any model).
+"""Shared train/test splits for the experiments (used by the transformer and the Random Forest; reusable by any model).
 
 Two tasks, both 5-fold, repeated with different seeds:
   player  : whole players held out (gender, serve number, serve speed)
