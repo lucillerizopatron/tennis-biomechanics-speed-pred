@@ -43,9 +43,3 @@ tennis_serve_dataset/
 |   |-- archive/                  earlier work, not used in the report
 |       |-- initial_speed_check/          first speed-only Random Forest scripts and notebook, frame-skipping scripts
 |
-|-- results/                      outputs of the scripts (not in the repo); see results/README.txt
-|   |-- cache/                    reusable intermediate data (features, resampled keypoints)
-|   |-- pipeline_check/           output of pipeline_check.py
-|   |-- random_forest/            gender/, identity/, serve_number/, speed/
-|   |-- transformer/              results_3repeats.*, results_first_run_1repeat_with_speed.*, tuned_configs.json
-|   |-- archive/                  outputs of earlier, unused versions
