@@ -1,11 +1,11 @@
 """Data, model and training loop for the small paper-style transformer.
 
 Input per serve: smoothed, hip-relative joint positions resampled to 32 frames.
-  size  arm  : the serving arm (shoulder, elbow, wrist), 9 numbers per frame
+  size  arm  : the serving arm (shoulder, elbow, wrist; the side with the faster wrist), 9 numbers per frame
         body : all 17 joints, 51 numbers per frame
   mode  raw    : positions as they are (size, proportions and motion mixed)
         scaled : positions divided by limb size (arm length for arm, torso for body),
-                 the same scaling the Random Forest uses for its scaled motion
+                 the same scaling idea as the Random Forest's scaled motion
         motion : scaled positions minus each joint's mean over the serve, so only
                  movement is left
 Folds come from splits/splits.py, shared with the Random Forest.
@@ -21,9 +21,7 @@ import torch.nn as nn
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # src/
 import serve_data as sd
-from handedness import hand
-from pose_features import ARM
-from smoothing import hip_relative, smooth
+import joints
 
 torch.set_num_threads(os.cpu_count())
 T = 32
@@ -40,30 +38,33 @@ CONFIGS = [
 
 
 def load_data():
-    """Metadata (same row order as splits/splits.py) and the 32-frame positions, (N,32,17,3)."""
+    """Metadata (same row order as splits/splits.py), per-serve side and scales, and the
+    32-frame hip-relative positions, (N,32,17,3)."""
     meta = sd.load_metadata().reset_index(drop=True)
     meta["height_cm"] = meta.height_cm.fillna(meta.height_cm.median())
-    feats = pd.read_parquet(CACHE / "pose_features_8hz.parquet")
-    assert (feats.filename.values == meta.filename.values).all(), "row order differs"
-    cache = CACHE / "resampled_keypoints_32frames.npy"
+    cache = CACHE / "h36m_inputs_32frames.npz"
     if cache.exists():
-        raw = np.load(cache)
+        z = np.load(cache, allow_pickle=False)
+        raw, side, sa, st = z["raw"], z["side"], z["scale_arm"], z["scale_torso"]
     else:
         raw = np.zeros((len(meta), T, 17, 3), np.float32)
+        side, sa, st = [], [], []
         for i, k in enumerate(sd.load_keypoints(meta)):
-            r = smooth(hip_relative(k))
-            t = np.linspace(0, len(r) - 1, T)
+            r, s, a, t, _ = joints.serve_info(k)
+            side.append(s); sa.append(a); st.append(t)
+            tt = np.linspace(0, len(r) - 1, T)
             for j in range(17):
-                for a in range(3):
-                    raw[i, :, j, a] = np.interp(t, np.arange(len(r)), r[:, j, a])
-        np.save(cache, raw)
+                for a_ in range(3):
+                    raw[i, :, j, a_] = np.interp(tt, np.arange(len(r)), r[:, j, a_])
+        side, sa, st = np.array(side), np.array(sa), np.array(st)
+        np.savez(cache, raw=raw, side=side, scale_arm=sa, scale_torso=st)
+    feats = pd.DataFrame({"side": side, "scale_arm": sa, "scale_torso": st})
     return meta, feats, raw
 
 
 def make_input(meta, feats, raw, size, mode):
     if size == "arm":
-        hands = meta.server.map(hand).values
-        x = np.stack([raw[i][:, list(ARM[h])] for i, h in enumerate(hands)])  # (N,32,3,3)
+        x = np.stack([raw[i][:, list(joints.ARM[s])] for i, s in enumerate(feats.side.values)])  # (N,32,3,3)
         scale = feats.scale_arm.values
     else:
         x, scale = raw, feats.scale_torso.values

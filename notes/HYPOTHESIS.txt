@@ -42,5 +42,5 @@ Plan
 - Models: a Random Forest on summary features and a small transformer on the raw
   positions.
 - Uncertainty: player-level bootstrap confidence intervals.
-- Speed: checked against pipeline problems (smoothing cutoff, scaling, handedness
-  table) before treating it as a property of the data.
+- Speed: baselines (mean, gender, serve number, height) are compared first, so we can see whether pose adds
+  anything to them.

@@ -9,12 +9,6 @@ import serve_data as sd
 DEFAULT_CUTOFF_HZ = 8.0
 
 
-def hip_relative(k: np.ndarray) -> np.ndarray:
-    """Subtract the hip centre from every joint (coordinates are not root-centred)."""
-    centre = (k[:, sd.L_HIP] + k[:, sd.R_HIP]) / 2
-    return k - centre[:, None, :]
-
-
 def smooth(k: np.ndarray, cutoff_hz: float = DEFAULT_CUTOFF_HZ, order: int = 2) -> np.ndarray:
     """Low-pass filter a (T, J, 3) trajectory along time (zero phase, no lag)."""
     b, a = butter(order, cutoff_hz / (sd.FPS / 2))

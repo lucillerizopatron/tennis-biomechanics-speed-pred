@@ -11,9 +11,9 @@ ETH semester project (3 ECTS), based on Williams et al., "Effects of variable po
 **Method:** serving arm against all 17 joints, with two models: a Random Forest on summary features (body proportions and joint motion, separately and combined) and a small transformer on the raw positions (raw, size-scaled and motion-only versions). Models are always tested on players they have not seen (on matches they have not seen for identity), against baselines built from the metadata alone, with player-level bootstrap confidence intervals.
 
 ## Repository
-- `notes/`: the hypothesis, the first speed check, how to run, and the folder structure (`FOLDER_STRUCTURE.txt` says what each file does)
+- `notes/`: the hypothesis, the results write-ups, how to run, and the folder structure (`FOLDER_STRUCTURE.txt` says what each file does)
 - `splits/`: the train/test folds, in one place with its own README
-- `src/`: shared code, `random_forest/`, `transformer/`, and `archive/` for earlier work
+- `src/`: shared code, `random_forest/`, `transformer/`
 
 ## Setup
 1. `pip install -r requirements.txt`

@@ -2,21 +2,18 @@ How to reproduce the results (venv active; run each command from the folder show
 
 Setup: pip install -r requirements.txt, and put the dataset in tennis_serve_data/.
 
-From src/:
- 1. python pose_features.py                       features for 6, 8 and 12 Hz  -> results/cache/
- 2. python pipeline_check.py                      speed pipeline check         -> results/pipeline_check/
-
 From the repo root (optional; the folds are made on the fly by splits/splits.py, this just writes them to a file):
- 3. python splits/splits.py                       -> splits/shared_5fold_splits.json
+ 1. python splits/splits.py                       -> splits/shared_5fold_splits.json
 
 From src/random_forest/ (Random Forest; a few minutes per script):
- 4. python rf_classify.py --target all            gender, identity, serve number     -> results/random_forest/gender/, identity/, serve_number/
- 5. python rf_speed.py                            speed: metadata vs. pose, then the four subgroups   -> results/random_forest/speed/
+ 2. python rf_classify.py --target all            gender, identity, serve number     -> results/random_forest/gender/, identity/, serve_number/
+ 3. python rf_speed.py                            speed: metadata vs. pose, then the four subgroups   -> results/random_forest/speed/
     Both use the shared 5-fold splits and write their features to results/cache/rf_features.parquet (made on the first run).
     --reps 1 runs a quick one-repeat test.
 
 From src/ (transformer; slow, several hours on CPU):
- 6. python transformer/run_transformer.py tune                         light tuning  -> results/transformer/tuned_configs.json
- 7. REPS=3 TAG=_3repeats python transformer/run_transformer.py gender identity serve    (PowerShell: $env:REPS='3'; $env:TAG='_3repeats')
- 8. python transformer/run_transformer.py speed                        speed (1 repeat)
+ 4. python transformer/run_transformer.py tune                         light tuning  -> results/transformer/tuned_configs.json
+ 5. REPS=3 TAG=_3repeats python transformer/run_transformer.py gender identity serve    (PowerShell: $env:REPS='3'; $env:TAG='_3repeats')
+ 6. python transformer/run_transformer.py speed                        speed (1 repeat)
     QUICK=1 runs a one-epoch smoke test.
+    The first run builds results/cache/h36m_inputs_32frames.npz (32-frame positions, serving side and scales per serve).

@@ -14,18 +14,6 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "tennis_serve_data"
 
 FPS = 60.0       # n_frames / duration_sec is exactly 60 for every serve
-UP_AXIS = 2
-UP_SIGN = -1.0
-# Subtract the hip centre before measuring limb motion, otherwise whole-body movement dominates.
-
-# COCO-17 indices
-NOSE, L_EYE, R_EYE, L_EAR, R_EAR = 0, 1, 2, 3, 4
-L_SHOULDER, R_SHOULDER = 5, 6
-L_ELBOW, R_ELBOW = 7, 8
-L_WRIST, R_WRIST = 9, 10
-L_HIP, R_HIP = 11, 12
-L_KNEE, R_KNEE = 13, 14
-L_ANKLE, R_ANKLE = 15, 16
 
 
 def load_metadata(data: Path = DATA) -> pd.DataFrame:

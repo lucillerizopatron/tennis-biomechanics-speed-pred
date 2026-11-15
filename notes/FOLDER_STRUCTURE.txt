@@ -17,18 +17,14 @@ tennis_serve_dataset/
 |
 |-- notes/
 |   |-- HYPOTHESIS.txt            central question, story and predictions
-|   |-- INITIAL_SPEED_CHECK.txt   summary of the first attempt: does pose predict serve speed?
 |   |-- random_forest_results.txt Random Forest results write-up (all four targets)
 |   |-- transformer_results.txt   transformer results write-up (same structure)
 |   |-- HOW_TO_RUN.txt            how to reproduce the results
 |   |-- FOLDER_STRUCTURE.txt      this file
 |
 |-- src/                          code (run scripts from src/, or from src/random_forest/ for the Random Forest ones)
-|   |-- serve_data.py             loads metadata and keypoints; constants (60 fps, vertical axis, joint indices)
-|   |-- smoothing.py              hip-relative positions and the Butterworth low-pass filter (8 Hz)
-|   |-- handedness.py             lookup table of left-handed players (only partly verified)
-|   |-- pose_features.py          per-serve features: shape, motion, scaled motion (arm and body); saves results/cache/
-|   |-- pipeline_check.py         checks whether "pose does not predict speed" is a data limit; saves results/pipeline_check/
+|   |-- serve_data.py             loads metadata and keypoints; constant (60 fps)
+|   |-- smoothing.py              the Butterworth low-pass filter (8 Hz)
 |   |
 |   |-- random_forest/            Random Forest work (final versions only)
 |   |   |-- rf_common.py                  shared RF code: feature cache, shared folds, models, bootstrap
@@ -37,15 +33,11 @@ tennis_serve_dataset/
 |   |   |-- rf_speed.py                   speed: metadata vs. pose, then within the four gender x serve-number subgroups
 |   |
 |   |-- transformer/              transformer work
+|   |   |-- joints.py                     Human3.6M joint indices, hip centring, serving-arm choice (faster wrist), arm/torso scales
 |   |   |-- transformer_lib.py            data loading, model, training loop
 |   |   |-- run_transformer.py            all transformer experiments (tune, gender, identity, serve, speed)
-|   |
-|   |-- archive/                  earlier work, not used in the report
-|       |-- initial_speed_check/          first speed-only Random Forest scripts and notebook, frame-skipping scripts
 |
 |-- results/                      outputs of the scripts (not in the repo); see results/README.txt
 |   |-- cache/                    reusable intermediate data (features, resampled keypoints)
-|   |-- pipeline_check/           output of pipeline_check.py
 |   |-- random_forest/            gender/, identity/, serve_number/, speed/
-|   |-- transformer/              results_3repeats.*, results_first_run_1repeat_with_speed.*, tuned_configs.json
-|   |-- archive/                  outputs of earlier, unused versions
+|   |-- transformer/              results_3repeats.*, speed results, tuned_configs.json, logs
